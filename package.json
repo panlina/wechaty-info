@@ -1,0 +1,19 @@
+{
+  "name": "wechaty-info",
+  "version": "0.0.0",
+  "description": "A Wechaty plugin that provides certain type of information, like news or jokes",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panlina/wechaty-info.git"
+  },
+  "keywords": ["wechaty", "information"],
+  "author": "Jack Lu <jacklu@jacklu.me>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/panlina/wechaty-info/issues"
+  },
+  "homepage": "https://github.com/panlina/wechaty-info#readme",
+  "peerDependencies": {
+    "wechaty": "^0.60.10"
+  }
+}
