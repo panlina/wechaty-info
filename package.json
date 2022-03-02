@@ -15,5 +15,8 @@
   "homepage": "https://github.com/panlina/wechaty-info#readme",
   "peerDependencies": {
     "wechaty": "^0.60.10"
+  },
+  "devDependencies": {
+    "wechaty": "^0.60.10"
   }
 }
