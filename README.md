@@ -10,7 +10,7 @@ var WechatyInfoPlugin = require('wechaty-info');
 var bot = new Wechaty({
 	command: "讲个笑话",
 	fetch: () => axios.get("https://api.apiopen.top/getJoke?type=text&count=1")
-		.then(({ data: data }) => data.result[0].text)
+		.then(({ data: data }) => data.result[0].text, () => "请求失败")
 });
 bot.use(WechatyInfoPlugin());
 ```
