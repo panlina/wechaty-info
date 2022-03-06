@@ -23,32 +23,29 @@ module.exports = function WechatyInfoPlugin(config) {
 				message.text() == config.command
 				&& (
 					!config.filter || await (
-						async from => (
+						async conversation => (
 							await Promise.all(
 								config.filter.map(
-									filter => sayableQueryFilterFactory(filter)(from)
+									filter => sayableQueryFilterFactory(filter)(conversation)
 								)
 							)
 						).some(Boolean)
 					)(
-						message.room() || message.talker()
+						message.conversation()
 					)
 				)
 			)
 				if (!waiting) {
 					try { var information = await config.fetch(); }
 					catch (/** @type {string} */e) { var error = e; }
-					var receiver = message.room() || message.talker();
-					await receiver.say(information || error);
+					await message.conversation().say(information || error);
 					waiting = true;
 					setTimeout(function () {
 						waiting = false;
 					}, config.throttle?.timeout);
 				} else
-					if (config.throttle?.message) {
-						var receiver = message.room() || message.talker();
-						await receiver.say(config.throttle?.message);
-					}
+					if (config.throttle?.message)
+						await message.conversation().say(config.throttle?.message);
 		});
 		function sayableQueryFilterFactory(/** @type {SayableQueryFilter} */filter) {
 			return async function (/** @type {Sayable} */sayable) {
