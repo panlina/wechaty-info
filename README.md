@@ -7,6 +7,7 @@ A Wechaty plugin that provides certain type of information, like news or jokes.
 ```js
 var { Wechaty } = require('wechaty');
 var WechatyInfoPlugin = require('wechaty-info');
+var axios = require('axios');
 var bot = new Wechaty();
 bot.use(
 	WechatyInfoPlugin({
