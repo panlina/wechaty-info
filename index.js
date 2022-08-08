@@ -31,21 +31,21 @@ module.exports = function WechatyInfoPlugin(config) {
 							)
 						).some(Boolean)
 					)(
-						message.conversation()
+						messageConversation(message)
 					)
 				)
 			)
 				if (!waiting) {
 					try { var information = await config.fetch(); }
 					catch (/** @type {string} */e) { var error = e; }
-					await message.conversation().say(information || error);
+					await messageConversation(message).say(information || error);
 					waiting = true;
 					setTimeout(function () {
 						waiting = false;
 					}, config.throttle?.timeout);
 				} else
 					if (config.throttle?.message)
-						await message.conversation().say(config.throttle?.message);
+						await messageConversation(message).say(config.throttle?.message);
 		});
 		function sayableQueryFilterFactory(/** @type {SayableQueryFilter} */filter) {
 			return async function (/** @type {Sayable} */sayable) {
@@ -59,6 +59,11 @@ module.exports = function WechatyInfoPlugin(config) {
 					);
 				return false;
 			};
+		}
+		function messageConversation(/** @type {Message} */message) {
+			return message.talker().self() ?
+				message.room() || message.to() :
+				message.conversation();
 		}
 	};
 };
