@@ -19,33 +19,30 @@ module.exports = function WechatyInfoPlugin(config) {
 		// throttle, based on https://stackoverflow.com/a/27078401/4127811
 		var waiting = false;
 		bot.on("message", async (/** @type {Message} */message) => {
+			var conversation = messageConversation(message);
 			if (
 				message.text() == config.command
 				&& (
-					!config.filter || await (
-						async conversation => (
-							await Promise.all(
-								config.filter.map(
-									filter => sayableQueryFilterFactory(filter)(conversation)
-								)
+					!config.filter || (
+						await Promise.all(
+							config.filter.map(
+								filter => sayableQueryFilterFactory(filter)(conversation)
 							)
-						).some(Boolean)
-					)(
-						messageConversation(message)
-					)
+						)
+					).some(Boolean)
 				)
 			)
 				if (!waiting) {
 					try { var information = await config.fetch(); }
 					catch (/** @type {string} */e) { var error = e; }
-					await messageConversation(message).say(information || error);
+					await conversation.say(information || error);
 					waiting = true;
 					setTimeout(function () {
 						waiting = false;
 					}, config.throttle?.timeout);
 				} else
 					if (config.throttle?.message)
-						await messageConversation(message).say(config.throttle?.message);
+						await conversation.say(config.throttle?.message);
 		});
 		function sayableQueryFilterFactory(/** @type {SayableQueryFilter} */filter) {
 			return async function (/** @type {Sayable} */sayable) {
