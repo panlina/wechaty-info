@@ -17,7 +17,7 @@
 module.exports = function WechatyInfoPlugin(config) {
 	return function (/** @type {Wechaty} */bot) {
 		// throttle, based on https://stackoverflow.com/a/27078401/4127811
-		var waiting = false;
+		var waiting = {};
 		bot.on("message", async (/** @type {Message} */message) => {
 			var conversation = messageConversation(message);
 			if (
@@ -32,13 +32,13 @@ module.exports = function WechatyInfoPlugin(config) {
 					).some(Boolean)
 				)
 			)
-				if (!waiting) {
+				if (!waiting[conversation.id]) {
 					try { var information = await config.fetch(); }
 					catch (/** @type {string} */e) { var error = e; }
 					await conversation.say(information || error);
-					waiting = true;
+					waiting[conversation.id] = true;
 					setTimeout(function () {
-						waiting = false;
+						waiting[conversation.id] = false;
 					}, config.throttle?.timeout);
 				} else
 					if (config.throttle?.message)
