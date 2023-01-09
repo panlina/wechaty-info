@@ -8,8 +8,8 @@
 /**
  * @param {Object} config
  * @param {SayableQueryFilter[]} [config.filter] the filter of contacts and rooms to enable this plugin
- * @param {string} config.command the message text to ask for the information
- * @param {() => Promise<string>} config.fetch the information fetcher, fulfills with information and rejects with error message
+ * @param {string | RegExp} config.command the message text or pattern to ask for the information
+ * @param {(match?: RegExpMatchArray) => Promise<string>} config.fetch the information fetcher, fulfills with information and rejects with error message, accepts match result as parameter if `command` is `RegExp`
  * @param {Object} config.throttle the throttle config
  * @param {number} config.throttle.timeout the timeout in milliseconds
  * @param {string} config.throttle.message the message to reply when throttled
@@ -20,9 +20,12 @@ module.exports = function WechatyInfoPlugin(config) {
 		var waiting = {};
 		bot.on("message", async (/** @type {Message} */message) => {
 			var conversation = messageConversation(message);
+			var match;
 			if (
-				message.text() == config.command
-				&& (
+				(typeof config.command == 'string' ?
+					message.text() == config.command :
+					match = message.text().match(config.command)
+				) && (
 					!config.filter || (
 						await Promise.all(
 							config.filter.map(
@@ -33,7 +36,7 @@ module.exports = function WechatyInfoPlugin(config) {
 				)
 			)
 				if (!waiting[conversation.id]) {
-					try { var information = await config.fetch(); }
+					try { var information = await config.fetch(match); }
 					catch (/** @type {string} */e) { var error = e; }
 					await conversation.say(information || error);
 					waiting[conversation.id] = true;
