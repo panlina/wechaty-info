@@ -19,7 +19,11 @@ module.exports = function WechatyInfoPlugin(config) {
 	return function (/** @type {Wechaty} */bot) {
 		// throttle, based on https://stackoverflow.com/a/27078401/4127811
 		var waiting = {};
-		bot.on("message", async (/** @type {Message} */message) => {
+		bot.on("message", listener);
+		return () => {
+			bot.off("message", listener);
+		};
+		async function listener(/** @type {Message} */message) {
 			var conversation = messageConversation(message);
 			var match;
 			if (
@@ -47,7 +51,7 @@ module.exports = function WechatyInfoPlugin(config) {
 				} else
 					if (config.throttle?.message)
 						await conversation.say(config.throttle?.message);
-		});
+		}
 		function sayableQueryFilterFactory(/** @type {SayableQueryFilter} */filter) {
 			return async function (/** @type {Sayable} */sayable) {
 				if (filter.contact)
