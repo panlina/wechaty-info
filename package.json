@@ -17,6 +17,11 @@
     "wechaty": "^0.60.10"
   },
   "devDependencies": {
-    "wechaty": "^0.60.10"
+    "mocha": "^10.2.0",
+    "wechaty": "^0.60.10",
+    "wechaty-puppet-mock": "^0.28.3"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
