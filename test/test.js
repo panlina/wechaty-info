@@ -98,6 +98,45 @@ it('error', async () => {
 	await bot.stop();
 });
 
+it('throttle', async () => {
+	var mocker = new Mocker();
+
+	var puppet = new PuppetMock({ mocker });
+	var bot = new Wechaty({ puppet });
+	bot.use(new WechatyInfoPlugin({
+		command: "a",
+		fetch: () => Promise.resolve("b"),
+		throttle: {
+			timeout: 1000,
+			message: "-"
+		}
+	}));
+
+	await bot.start();
+
+	mocker.scan('https://github.com/wechaty', 1);
+	var user = mocker.createContact();
+	mocker.login(user);
+
+	var contact = mocker.createContact();
+
+	contact.say("a").to(user);
+	var message = await waitForMessage(contact);
+	assert.equal(message.text(), "b");
+
+	contact.say("a").to(user);
+	var message = await waitForMessage(contact);
+	assert.equal(message.text(), "-");
+
+	await sleep(1000);
+
+	contact.say("a").to(user);
+	var message = await waitForMessage(contact);
+	assert.equal(message.text(), "b");
+
+	await bot.stop();
+});
+
 /**
  * @param {Contact | Room} conversation
  * @return {Promise<Message>}
@@ -109,4 +148,14 @@ function waitForMessage(conversation) {
 		}),
 		100
 	);
+}
+
+/**
+ * @param {number} time
+ * @return {Promise<void>}
+ */
+function sleep(time) {
+	return new Promise(resolve => {
+		setTimeout(resolve, time);
+	});
 }
