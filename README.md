@@ -14,7 +14,7 @@ bot.use(
 		filter: [{ contact: { name: '小红' } }, { room: { topic: /^都是老师/ } }],
 		command: "讲个笑话",
 		fetch: () => axios.get("https://api.apiopen.top/getJoke?type=text&count=1")
-			.then(({ data: data }) => data.result[0].text, () => "请求失败"),
+			.then(({ data: data }) => data.result[0].text, () => Promise.reject("请求失败")),
 		throttle: {
 			timeout: 60 * 1000,
 			message: "对不起，1分钟内只能看一个笑话[呲牙]"
