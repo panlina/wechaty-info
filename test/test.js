@@ -33,12 +33,54 @@ it('', async () => {
 	await bot.stop();
 });
 
+it('filter', async () => {
+	var mocker = new Mocker();
+
+	var puppet = new PuppetMock({ mocker });
+	var bot = new Wechaty({ puppet });
+	bot.use(new WechatyInfoPlugin({
+		filter: [{ contact: { id: 'a' } }, { room: { topic: /t/ } }],
+		command: "a",
+		fetch: () => Promise.resolve("b")
+	}));
+
+	await bot.start();
+
+	mocker.scan('https://github.com/wechaty', 1);
+	var user = mocker.createContact();
+	mocker.login(user);
+
+	var contactA = mocker.createContact({ id: 'a' });
+	var contactB = mocker.createContact({ id: 'b' });
+	var roomA = mocker.createRoom({ topic: 't', memberIdList: [contactA.id, contactB.id, user.id] });
+	var roomB = mocker.createRoom({ topic: 's', memberIdList: [contactA.id, contactB.id, user.id] });
+
+	contactA.say("a").to(user);
+	var message = await waitForMessage(contactA);
+	assert.equal(message.text(), "b");
+
+	contactB.say("a").to(user);
+	await assert.rejects(waitForMessage(contactB));
+
+	contactB.say("a").to(roomA);
+	var message = await waitForMessage(roomA);
+	assert.equal(message.text(), "b");
+
+	contactB.say("a").to(roomB);
+	await assert.rejects(waitForMessage(roomB));
+
+	await bot.stop();
+});
+
 /**
  * @param {Contact | Room} conversation
  * @return {Promise<Message>}
  */
 function waitForMessage(conversation) {
-	return new Promise(resolve => {
-		conversation.once('message', resolve);
-	});
+	return require('promise-timeout').timeout(
+		new Promise(resolve => {
+			conversation.once('message', resolve);
+		}),
+		100
+	);
 }
