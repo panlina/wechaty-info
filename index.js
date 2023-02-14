@@ -11,7 +11,7 @@
  * @param {SayableQueryFilter[]} [config.filter] the filter of contacts and rooms to enable this plugin
  * @param {string | RegExp} config.command the message text or pattern to ask for the information
  * @param {(match?: RegExpMatchArray) => Promise<string | FileBox>} config.fetch the information fetcher, fulfills with information and rejects with error message, accepts match result as parameter if `command` is `RegExp`
- * @param {Object} config.throttle the throttle config
+ * @param {Object} [config.throttle] the throttle config
  * @param {number} config.throttle.timeout the timeout in milliseconds
  * @param {string} config.throttle.message the message to reply when throttled
  */
