@@ -72,6 +72,32 @@ it('filter', async () => {
 	await bot.stop();
 });
 
+it('error', async () => {
+	var mocker = new Mocker();
+
+	var puppet = new PuppetMock({ mocker });
+	var bot = new Wechaty({ puppet });
+	bot.use(new WechatyInfoPlugin({
+		command: "a",
+		fetch: () => Promise.reject("b")
+	}));
+
+	await bot.start();
+
+	mocker.scan('https://github.com/wechaty', 1);
+	var user = mocker.createContact();
+	mocker.login(user);
+
+	var contact = mocker.createContact();
+
+	contact.say("a").to(user);
+
+	var message = await waitForMessage(contact);
+	assert.equal(message.text(), "b");
+
+	await bot.stop();
+});
+
 /**
  * @param {Contact | Room} conversation
  * @return {Promise<Message>}
