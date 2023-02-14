@@ -54,11 +54,11 @@ module.exports = function WechatyInfoPlugin(config) {
 		}
 		function sayableQueryFilterFactory(/** @type {SayableQueryFilter} */filter) {
 			return async function (/** @type {Sayable} */sayable) {
-				if (filter.contact)
+				if (filter.contact && sayable instanceof bot.Contact)
 					return bot.puppet.contactQueryFilterFactory(filter.contact)(
 						await bot.puppet.contactPayload(sayable.id)
 					);
-				if (filter.room)
+				if (filter.room && sayable instanceof bot.Room)
 					return bot.puppet.roomQueryFilterFactory(filter.room)(
 						await bot.puppet.roomPayload(sayable.id)
 					);
