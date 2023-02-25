@@ -44,10 +44,12 @@ module.exports = function WechatyInfoPlugin(config) {
 					try { var information = await config.fetch(match); }
 					catch (/** @type {string} */e) { var error = e; }
 					await conversation.say(information || error);
-					waiting[conversation.id] = true;
-					setTimeout(function () {
-						waiting[conversation.id] = false;
-					}, config.throttle?.timeout);
+					if (information) {
+						waiting[conversation.id] = true;
+						setTimeout(function () {
+							waiting[conversation.id] = false;
+						}, config.throttle?.timeout);
+					}
 				} else
 					if (config.throttle?.message)
 						await conversation.say(config.throttle?.message);
